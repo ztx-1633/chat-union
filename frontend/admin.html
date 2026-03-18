@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat-Union - 协同运维控制台</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- 顶部导航栏 -->
+        <nav class="admin-navbar">
+            <div class="navbar-header">
+                <h1 class="logo">Chat-Union 管理控制台</h1>
+            </div>
+            <div class="navbar-actions">
+                <span class="user-info">管理员</span>
+                <a href="index.html" class="btn btn-secondary">返回聊天</a>
+            </div>
+        </nav>
+
+        <div class="admin-main">
+            <!-- 侧边栏菜单 -->
+            <aside class="admin-sidebar">
+                <ul class="admin-menu">
+                    <li class="menu-item active" data-section="dashboard">
+                        <span class="menu-icon">📊</span>
+                        <span class="menu-text">监控大盘</span>
+                    </li>
+                    <li class="menu-item" data-section="gateways">
+                        <span class="menu-icon">🌐</span>
+                        <span class="menu-text">网关管理</span>
+                    </li>
+                    <li class="menu-item" data-section="versions">
+                        <span class="menu-icon">📦</span>
+                        <span class="menu-text">版本管理</span>
+                    </li>
+                    <li class="menu-item" data-section="audit">
+                        <span class="menu-icon">📝</span>
+                        <span class="menu-text">审计日志</span>
+                    </li>
+                    <li class="menu-item" data-section="revenue">
+                        <span class="menu-icon">💰</span>
+                        <span class="menu-text">生态分成</span>
+                    </li>
+                    <li class="menu-item" data-section="ecosystem">
+                        <span class="menu-icon">🌱</span>
+                        <span class="menu-text">生态池</span>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- 主内容区域 -->
+            <main class="admin-content">
+                <!-- 监控大盘 -->
+                <section id="dashboard-section" class="content-section active">
+                    <div class="section-header">
+                        <h2>监控大盘</h2>
+                        <button class="btn btn-primary" onclick="refreshDashboard()">刷新</button>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">🌐</div>
+                            <div class="stat-info">
+                                <h3 id="total-gateways">0</h3>
+                                <p>网关总数</p>
+                            </div>
+                        </div>
+                        <div class="stat-card online">
+                            <div class="stat-icon">✅</div>
+                            <div class="stat-info">
+                                <h3 id="online-gateways">0</h3>
+                                <p>在线网关</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-info">
+                                <h3 id="total-requests">0</h3>
+                                <p>总请求数</p>
+                            </div>
+                        </div>
+                        <div class="stat-card error">
+                            <div class="stat-icon">⚠️</div>
+                            <div class="stat-info">
+                                <h3 id="error-rate">0%</h3>
+                                <p>错误率</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3>网关性能</h3>
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>请求趋势</h3>
+                            <canvas id="requestsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="alerts-section">
+                        <h3>告警信息</h3>
+                        <div id="alerts-list" class="alerts-list">
+                            <p class="empty-state">暂无告警</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 网关管理 -->
+                <section id="gateways-section" class="content-section">
+                    <div class="section-header">
+                        <h2>网关管理</h2>
+                        <button class="btn btn-primary" onclick="openRegisterGatewayModal()">注册新网关</button>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>网关ID</th>
+                                    <th>名称</th>
+                                    <th>版本</th>
+                                    <th>状态</th>
+                                    <th>端点</th>
+                                    <th>最后心跳</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gateways-table-body">
+                                <tr>
+                                    <td colspan="7" class="empty-state">暂无网关数据</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 版本管理 -->
+                <section id="versions-section" class="content-section">
+                    <div class="section-header">
+                        <h2>版本管理</h2>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>网关名称</th>
+                                    <th>当前版本</th>
+                                    <th>状态</th>
+                                    <th>最后心跳</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="versions-table-body">
+                                <tr>
+                                    <td colspan="5" class="empty-state">暂无版本数据</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 审计日志 -->
+                <section id="audit-section" class="content-section">
+                    <div class="section-header">
+                        <h2>审计日志</h2>
+                    </div>
+                    
+                    <div class="audit-filters">
+                        <select id="audit-filter-user" class="form-select">
+                            <option value="">所有用户</option>
+                        </select>
+                        <select id="audit-filter-action" class="form-select">
+                            <option value="">所有操作</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="refreshAuditLogs()">查询</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>用户</th>
+                                    <th>操作</th>
+                                    <th>资源类型</th>
+                                    <th>资源ID</th>
+                                    <th>详情</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-table-body">
+                                <tr>
+                                    <td colspan="7" class="empty-state">暂无审计日志</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 生态分成 -->
+                <section id="revenue-section" class="content-section">
+                    <div class="section-header">
+                        <h2>生态分成</h2>
+                        <button class="btn btn-primary" onclick="openTransactionModal()">创建交易</button>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <h3 id="total-revenue">0</h3>
+                                <p>总交易额</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🏠</div>
+                            <div class="stat-info">
+                                <h3 id="source-gateway-fee">0</h3>
+                                <p>源网关分成</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🌱</div>
+                            <div class="stat-info">
+                                <h3 id="ecosystem-fee">0</h3>
+                                <p>生态池分成</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="fee-rates">
+                        <h3>分成比例设置</h3>
+                        <div class="fee-rate-item">
+                            <label>源网关分成比例：</label>
+                            <input type="number" id="source-gateway-rate" class="form-input" value="5" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <div class="fee-rate-item">
+                            <label>生态池分成比例：</label>
+                            <input type="number" id="ecosystem-pool-rate" class="form-input" value="5" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="updateFeeRates()">更新比例</button>
+                    </div>
+
+                    <div class="table-container">
+                        <h3>交易记录</h3>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>交易ID</th>
+                                    <th>源网关</th>
+                                    <th>目标网关</th>
+                                    <th>金额</th>
+                                    <th>源网关费</th>
+                                    <th>生态池费</th>
+                                    <th>净金额</th>
+                                    <th>类型</th>
+                                    <th>时间</th>
+                                </tr>
+                            </thead>
+                            <tbody id="revenue-table-body">
+                                <tr>
+                                    <td colspan="9" class="empty-state">暂无交易记录</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 生态池 -->
+                <section id="ecosystem-section" class="content-section">
+                    <div class="section-header">
+                        <h2>生态池管理</h2>
+                        <button class="btn btn-primary" onclick="openWithdrawalModal()">提取资金</button>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card large">
+                            <div class="stat-icon">🌱</div>
+                            <div class="stat-info">
+                                <h3 id="pool-balance">0</h3>
+                                <p>生态池余额</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-info">
+                                <h3 id="pool-deposits">0</h3>
+                                <p>总存入</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📉</div>
+                            <div class="stat-info">
+                                <h3 id="pool-withdrawals">0</h3>
+                                <p>总提取</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h3>历史记录</h3>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>时间</th>
+                                    <th>交易ID</th>
+                                    <th>类型</th>
+                                    <th>金额</th>
+                                    <th>余额</th>
+                                    <th>描述</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pool-table-body">
+                                <tr>
+                                    <td colspan="6" class="empty-state">暂无历史记录</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- 注册网关模态框 -->
+    <div id="registerGatewayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>注册新网关</h3>
+                <button class="btn btn-secondary" onclick="closeModal('registerGatewayModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="gateway-name">网关名称</label>
+                    <input type="text" id="gateway-name" class="form-input" placeholder="请输入网关名称">
+                </div>
+                <div class="form-group">
+                    <label for="gateway-version">版本</label>
+                    <input type="text" id="gateway-version" class="form-input" placeholder="例如: 1.0.0">
+                </div>
+                <div class="form-group">
+                    <label for="gateway-endpoint">端点地址</label>
+                    <input type="text" id="gateway-endpoint" class="form-input" placeholder="例如: http://localhost:8080">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('registerGatewayModal')">取消</button>
+                <button class="btn btn-primary" onclick="registerGateway()">注册</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 创建交易模态框 -->
+    <div id="transactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>创建交易</h3>
+                <button class="btn btn-secondary" onclick="closeModal('transactionModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="tx-source-gateway">源网关ID</label>
+                    <input type="text" id="tx-source-gateway" class="form-input" placeholder="请输入源网关ID">
+                </div>
+                <div class="form-group">
+                    <label for="tx-target-gateway">目标网关ID (可选)</label>
+                    <input type="text" id="tx-target-gateway" class="form-input" placeholder="请输入目标网关ID">
+                </div>
+                <div class="form-group">
+                    <label for="tx-amount">金额</label>
+                    <input type="number" id="tx-amount" class="form-input" placeholder="请输入金额" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="tx-type">交易类型</label>
+                    <select id="tx-type" class="form-select">
+                        <option value="service_fee">服务费</option>
+                        <option value="revenue_share">收入分成</option>
+                        <option value="subscription">订阅费</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tx-details">详情</label>
+                    <textarea id="tx-details" class="form-input" rows="3" placeholder="请输入交易详情"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('transactionModal')">取消</button>
+                <button class="btn btn-primary" onclick="createTransaction()">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提取资金模态框 -->
+    <div id="withdrawalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>提取资金</h3>
+                <button class="btn btn-secondary" onclick="closeModal('withdrawalModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="wd-amount">提取金额</label>
+                    <input type="number" id="wd-amount" class="form-input" placeholder="请输入提取金额" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="wd-description">描述</label>
+                    <textarea id="wd-description" class="form-input" rows="3" placeholder="请输入提取描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="wd-approved-by">批准人</label>
+                    <input type="text" id="wd-approved-by" class="form-input" placeholder="请输入批准人">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('withdrawalModal')">取消</button>
+                <button class="btn btn-primary" onclick="withdrawFromPool()">提取</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

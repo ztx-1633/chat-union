@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat-Union - 摩登时代</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="chat-union-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">Chat-Union</h1>
+                <button class="btn btn-primary create-workspace">+ 工作区</button>
+            </div>
+            
+            <div class="workspace-list">
+                <h3 class="section-title">工作区</h3>
+                <ul class="workspace-items">
+                    <li class="workspace-item active">
+                        <div class="workspace-icon">📱</div>
+                        <span class="workspace-name">默认工作区</span>
+                    </li>
+                    <li class="workspace-item">
+                        <div class="workspace-icon">💼</div>
+                        <span class="workspace-name">工作</span>
+                    </li>
+                    <li class="workspace-item">
+                        <div class="workspace-icon">🎨</div>
+                        <span class="workspace-name">创意</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="session-list">
+                <h3 class="section-title">会话</h3>
+                <ul class="session-items">
+                    <li class="session-item active">
+                        <div class="session-avatar">👤</div>
+                        <div class="session-info">
+                            <span class="session-name">默认会话</span>
+                            <span class="session-preview">你好，测试消息</span>
+                        </div>
+                        <span class="session-time">19:00</span>
+                    </li>
+                    <li class="session-item">
+                        <div class="session-avatar">🤖</div>
+                        <span class="session-info">
+                            <span class="session-name">AI助手</span>
+                            <span class="session-preview">我现在有点忙了，等会再来吧</span>
+                        </span>
+                        <span class="session-time">18:30</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 主聊天区域 -->
+        <div class="main-content">
+            <!-- 聊天头部 -->
+            <div class="chat-header">
+                <h2 class="chat-title">默认会话</h2>
+                <span class="chat-status">在线</span>
+            </div>
+            
+            <!-- 通道服务栏 -->
+            <div class="channel-service-bar">
+                <div class="channel-service-item active">
+                    <span class="channel-service-icon">💬</span>
+                    <span class="channel-service-name">默认</span>
+                </div>
+                <div class="channel-service-item" onclick="window.chatApp.openWechatConnectModal()">
+                    <span class="channel-service-icon">💬</span>
+                    <span class="channel-service-name">微信</span>
+                </div>
+                <div class="channel-service-item" onclick="window.chatApp.switchChannel('discord')">
+                    <span class="channel-service-icon">💬</span>
+                    <span class="channel-service-name">Discord</span>
+                </div>
+                <div class="channel-service-item" onclick="window.chatApp.switchChannel('slack')">
+                    <span class="channel-service-icon">💬</span>
+                    <span class="channel-service-name">Slack</span>
+                </div>
+                <div class="channel-service-item" onclick="window.chatApp.switchChannel('telegram')">
+                    <span class="channel-service-icon">💬</span>
+                    <span class="channel-service-name">Telegram</span>
+                </div>
+                <div class="channel-service-item" onclick="window.chatApp.openSmsConnectModal()">
+                    <span class="channel-service-icon">📱</span>
+                    <span class="channel-service-name">SMS</span>
+                </div>
+                <div class="channel-service-item" onclick="window.chatApp.openEmailConnectModal()">
+                    <span class="channel-service-icon">📧</span>
+                    <span class="channel-service-name">Email</span>
+                </div>
+            </div>
+            
+            <!-- 独立的设置按钮 -->
+            <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+                <div id="settingsButton" style="cursor: pointer; padding: 10px; background: #667eea; color: white; border: none; border-radius: 8px; font-size: 16px; width: 40px; height: 40px; text-align: center; line-height: 20px;">⚙️</div>
+            </div>
+            
+            <!-- 聊天消息区域 -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message">
+                    <div class="message-avatar">👤</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">你</span>
+                            <span class="message-time">19:00</span>
+                        </div>
+                        <div class="message-text">你好，测试消息</div>
+                    </div>
+                </div>
+                <div class="message ai-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-sender">AI</span>
+                            <span class="message-time">19:01</span>
+                        </div>
+                        <div class="message-text">我现在有点忙了，等会再来吧</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 输入区域 -->
+            <div class="chat-input-area">
+                <div class="input-container">
+                    <input type="text" id="messageInput" placeholder="输入消息..." class="message-input">
+                    <button class="btn btn-primary send-button">发送</button>
+                </div>
+                <div class="input-actions">
+                    <button class="btn btn-secondary">📎</button>
+                    <button class="btn btn-secondary">🎤</button>
+                    <button class="btn btn-secondary">🌐</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧信息面板 -->
+        <div class="info-panel">
+            <div class="panel-section">
+                <h3 class="section-title">会话信息</h3>
+                <div class="session-details">
+                    <div class="detail-item">
+                        <span class="detail-label">创建时间</span>
+                        <span class="detail-value">2026-03-18</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">消息数量</span>
+                        <span class="detail-value">2</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">最后活跃</span>
+                        <span class="detail-value">19:01</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-section">
+                <h3 class="section-title">工作区设置</h3>
+                <div class="workspace-settings">
+                    <div class="setting-item">
+                        <span class="setting-label">工作区名称</span>
+                        <input type="text" class="setting-input" value="默认工作区">
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">工作区图标</span>
+                        <select class="setting-select">
+                            <option>📱</option>
+                            <option>💼</option>
+                            <option>🎨</option>
+                            <option>📚</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary save-settings">保存设置</button>
+                </div>
+            </div>
+            
+            <div class="panel-section">
+                <h3 class="section-title">多平台通讯通道</h3>
+                <div class="channel-settings">
+                    <div class="setting-item">
+                        <div class="channel-item">
+                            <span class="channel-icon">💬</span>
+                            <span class="channel-name">WebSocket</span>
+                            <span class="channel-status active">已启用</span>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="channel-item">
+                            <span class="channel-icon">💬</span>
+                            <span class="channel-name">微信</span>
+                            <span class="channel-status">未配置</span>
+                            <button class="btn btn-secondary configure-channel" onclick="window.chatApp.configureChannel('微信')">配置</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="channel-item">
+                            <span class="channel-icon">💬</span>
+                            <span class="channel-name">Discord</span>
+                            <span class="channel-status">未配置</span>
+                            <button class="btn btn-secondary configure-channel" onclick="window.chatApp.configureChannel('Discord')">配置</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="channel-item">
+                            <span class="channel-icon">💬</span>
+                            <span class="channel-name">Slack</span>
+                            <span class="channel-status">未配置</span>
+                            <button class="btn btn-secondary configure-channel" onclick="window.chatApp.configureChannel('Slack')">配置</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="channel-item">
+                            <span class="channel-icon">💬</span>
+                            <span class="channel-name">Telegram</span>
+                            <span class="channel-status">未配置</span>
+                            <button class="btn btn-secondary configure-channel" onclick="window.chatApp.configureChannel('Telegram')">配置</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="channel-item">
+                            <span class="channel-icon">📱</span>
+                            <span class="channel-name">SMS</span>
+                            <span class="channel-status">未配置</span>
+                            <button class="btn btn-secondary configure-channel" onclick="window.chatApp.configureChannel('SMS')">配置</button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <div class="channel-item">
+                            <span class="channel-icon">📧</span>
+                            <span class="channel-name">Email</span>
+                            <span class="channel-status">未配置</span>
+                            <button class="btn btn-secondary configure-channel" onclick="window.chatApp.configureChannel('Email')">配置</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-section">
+                <h3 class="section-title">系统自测</h3>
+                <div class="self-test-section">
+                    <button class="btn btn-primary run-self-test" onclick="window.chatApp.runSelfTest()">运行自测</button>
+                    <div id="selfTestResults" class="self-test-results">
+                        <p>点击上方按钮运行自测</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 工作区创建模态框 -->
+    <div id="createWorkspaceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>创建新工作区</h3>
+                <button id="closeModal" class="btn btn-secondary">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="workspaceName">工作区名称</label>
+                    <input type="text" id="workspaceName" class="form-input" placeholder="请输入工作区名称">
+                </div>
+                <div class="form-group">
+                    <label for="workspaceIcon">工作区图标</label>
+                    <select id="workspaceIcon" class="form-select">
+                        <option value="📱">📱 手机</option>
+                        <option value="💼">💼 工作</option>
+                        <option value="🎨">🎨 创意</option>
+                        <option value="📚">📚 学习</option>
+                        <option value="🎵">🎵 音乐</option>
+                        <option value="🎮">🎮 游戏</option>
+                        <option value="📷">📷 摄影</option>
+                        <option value="✈️">✈️ 旅行</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelCreate" class="btn btn-secondary">取消</button>
+                <button id="confirmCreate" class="btn btn-primary">创建</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 微信账号连接模态框 -->
+    <div id="wechatConnectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>连接微信账号</h3>
+                <button id="closeWechatModal" class="btn btn-secondary">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="wechatQRCode">微信扫码登录</label>
+                    <div id="wechatQRCode" style="text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px; margin: 20px 0;">
+                        <div style="font-size: 48px;">📱</div>
+                        <p>请使用微信扫码登录</p>
+                        <p id="wechatLoginStatus">正在生成二维码...</p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="wechatAccountType">账号类型</label>
+                    <select id="wechatAccountType" class="form-select">
+                        <option value="personal">个人账号</option>
+                        <option value="official">公众号</option>
+                        <option value="mini">小程序</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelWechatConnect" class="btn btn-secondary">取消</button>
+                <button id="confirmWechatConnect" class="btn btn-primary">连接</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SMS通道连接模态框 -->
+    <div id="smsConnectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>连接SMS通道</h3>
+                <button id="closeSmsModal" class="btn btn-secondary">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="smsPhoneNumber">手机号码</label>
+                    <input type="tel" id="smsPhoneNumber" class="form-input" placeholder="请输入手机号码" maxlength="11">
+                </div>
+                <div class="form-group">
+                    <label for="smsVerificationCode">验证码</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="smsVerificationCode" class="form-input" placeholder="请输入验证码" style="flex: 1;">
+                        <button id="sendSmsCode" class="btn btn-secondary" onclick="window.chatApp.sendSmsVerificationCode()">发送验证码</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="smsServiceProvider">服务提供商</label>
+                    <select id="smsServiceProvider" class="form-select">
+                        <option value="twilio">Twilio</option>
+                        <option value="aliyun">阿里云短信</option>
+                        <option value="tencent">腾讯云短信</option>
+                        <option value="aws">AWS SNS</option>
+                        <option value="106">106短信平台</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelSmsConnect" class="btn btn-secondary">取消</button>
+                <button id="confirmSmsConnect" class="btn btn-primary">连接</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Email通道连接模态框 -->
+    <div id="emailConnectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>连接Email通道</h3>
+                <button id="closeEmailModal" class="btn btn-secondary">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="emailAddress">邮箱地址</label>
+                    <input type="email" id="emailAddress" class="form-input" placeholder="请输入邮箱地址">
+                </div>
+                <div class="form-group">
+                    <label for="emailVerificationCode">验证码</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="emailVerificationCode" class="form-input" placeholder="请输入验证码" style="flex: 1;">
+                        <button id="sendEmailCode" class="btn btn-secondary" onclick="window.chatApp.sendEmailVerificationCode()">发送验证码</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="emailServiceProvider">服务提供商</label>
+                    <select id="emailServiceProvider" class="form-select">
+                        <option value="smtp">SMTP</option>
+                        <option value="gmail">Gmail</option>
+                        <option value="outlook">Outlook</option>
+                        <option value="qq">QQ邮箱</option>
+                        <option value="163">163邮箱</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelEmailConnect" class="btn btn-secondary">取消</button>
+                <button id="confirmEmailConnect" class="btn btn-primary">连接</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/script.js"></script>
+</body>
+</html>

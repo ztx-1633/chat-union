@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简单设置页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        
+        #settingsButton {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            cursor: pointer;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 20px;
+        }
+        
+        .info-panel {
+            margin-top: 60px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>简单设置页面</h1>
+    
+    <!-- 设置按钮 -->
+    <div id="settingsButton">⚙️</div>
+    
+    <!-- 设置面板 -->
+    <div class="info-panel">
+        <h3>工作区设置</h3>
+        <p>这里是设置面板</p>
+    </div>
+    
+    <script>
+        // 简单的设置按钮点击处理
+        document.getElementById('settingsButton').addEventListener('click', function() {
+            console.log('设置按钮被点击');
+            alert('设置按钮被点击！');
+            document.querySelector('.info-panel').scrollIntoView({ behavior: 'smooth' });
+        });
+        
+        console.log('设置按钮事件已绑定');
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .chat-union-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #ffffff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar {
+            width: 300px;
+            background-color: #1a202c;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #2d3748;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f7fafc;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .chat-input-area {
+            padding: 20px;
+            background-color: white;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .info-panel {
+            width: 300px;
+            background-color: white;
+            border-left: 1px solid #e2e8f0;
+            overflow-y: auto;
+        }
+        
+        #settingsButton {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            cursor: pointer;
+            padding: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            line-height: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-union-container">
+        <!-- 侧边栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="logo">Chat-Union</h1>
+                <button class="btn btn-primary create-workspace">+ 工作区</button>
+            </div>
+        </div>
+        
+        <!-- 主聊天区域 -->
+        <div class="main-content">
+            <!-- 聊天头部 -->
+            <div class="chat-header">
